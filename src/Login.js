@@ -16,9 +16,9 @@ class Login {
     this.tokenStorage = tokenStorage;
   }
 
-  startLoginProcess(conf, callback) {
+  startLoginProcess(conf, callback, scope = 'openid') {
     return new Promise(((resolve, reject) => {
-      const { url, state } = getLoginURL(conf);
+      const { url, state } = getLoginURL(conf, scope);
 
       const listener = event => this.onOpenURL(conf, resolve, reject, state, event);
       Linking.addEventListener(URL, listener);
@@ -65,7 +65,7 @@ class Login {
 
     if (fullResponse.ok) {
       this.tokenStorage.saveTokens(jsonResponse);
-      resolve(jsonResponse, deepLinkUrl);
+      resolve({ tokens: jsonResponse, deepLinkUrl });
     } else {
       reject(jsonResponse);
     }

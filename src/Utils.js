@@ -34,13 +34,12 @@ const getRealmURL = (realm, authServerUrl) => {
   return `${url}realms/${encodeURIComponent(realm)}`;
 };
 
-const getLoginURL = (conf) => {
+const getLoginURL = (conf, scope) => {
   const {
     realm, redirectUri, resource, kcIdpHint, options, 'auth-server-url': authServerUrl,
   } = conf;
   const responseType = 'code';
   const state = uuidv4();
-  const scope = 'openid';
   const url = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/auth?${qs.stringify({
     scope,
     kc_idp_hint: kcIdpHint,
