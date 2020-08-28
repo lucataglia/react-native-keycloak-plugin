@@ -69,9 +69,10 @@ class Login {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async retrieveUserInfo(conf) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await this.getTokens();
+    const savedTokens = await TokenStorage.loadTokens();
 
     if (savedTokens) {
       const userInfoUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/userinfo`;
@@ -87,9 +88,10 @@ class Login {
     return Promise.reject();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async refreshToken(conf) {
     const { resource, realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await this.getTokens();
+    const savedTokens = await TokenStorage.loadTokens();
 
     if (!savedTokens) {
       console.warn('Missing tokens');
@@ -115,9 +117,10 @@ class Login {
     return Promise.reject();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async logoutKc(conf, callback) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await this.getTokens();
+    const savedTokens = await TokenStorage.loadTokens();
 
     if (!savedTokens) {
       console.warn('Token is undefined');
