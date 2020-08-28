@@ -1,11 +1,11 @@
 import * as qs from 'query-string';
 import { Linking } from 'react-native';
 import { encode as btoa } from 'base-64';
-import AsyncStorage from '@react-native-community/async-storage';
 import { getRealmURL, getLoginURL } from './Utils';
 import {
   GET, POST, URL,
 } from './Constants';
+import TokenStorage from './TokenStorage';
 
 const basicHeaders = {
   Accept: 'application/json',
@@ -13,10 +13,6 @@ const basicHeaders = {
 };
 
 class Login {
-  constructor(tokenStorage) {
-    this.tokenStorage = tokenStorage;
-  }
-
   startLoginProcess(conf, callback, scope = 'openid') {
     return new Promise(((resolve, reject) => {
       const { url, state } = getLoginURL(conf, scope);
@@ -44,6 +40,7 @@ class Login {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async retrieveTokens(conf, code, resolve, reject, deepLinkUrl) {
     const {
       resource, credentials, realm, redirectUri, 'auth-server-url': authServerUrl,
@@ -65,7 +62,7 @@ class Login {
     const jsonResponse = await fullResponse.json();
 
     if (fullResponse.ok) {
-      this.tokenStorage.saveTokens(jsonResponse);
+      TokenStorage.saveTokens(jsonResponse);
       resolve({ tokens: jsonResponse, deepLinkUrl });
     } else {
       reject(jsonResponse);
@@ -111,16 +108,17 @@ class Login {
     const fullResponse = await fetch(refreshTokenUrl, options);
     if (fullResponse.ok) {
       const jsonResponse = await fullResponse.json();
-      this.tokenStorage.saveTokens(jsonResponse);
+      TokenStorage.saveTokens(jsonResponse);
       return jsonResponse;
     }
 
     return Promise.reject();
   }
 
-  async logoutKc(conf, callback, tokensKey) {
+  async logoutKc(conf, callback) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = tokensKey ? await AsyncStorage.getItem(tokensKey) : await this.getTokens();
+    const savedTokens = await this.getTokens();
+
     if (!savedTokens) {
       console.warn('Token is undefined');
       return Promise.reject();
@@ -132,21 +130,12 @@ class Login {
     const fullResponse = await fetch(logoutUrl, options);
 
     if (fullResponse.ok) {
-      if (!tokensKey) {
-        this.tokenStorage.clearTokens();
-      } else {
-        await AsyncStorage.removeItem(tokensKey);
-      }
+      TokenStorage.clearTokens();
       callback();
-      return 'OK';
     }
 
-    throw new Error(`Error during kc-logout: ${fullResponse}`);
-  }
-
-
-  getTokens() {
-    return this.tokenStorage.loadTokens();
+    console.error('Error during kc-logout: ', fullResponse);
+    return Promise.reject();
   }
 }
 
