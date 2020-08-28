@@ -1,6 +1,5 @@
 import Login from './Login';
-import TokenStorage from './TokenStorage';
 
-const login = new Login(new TokenStorage('react-native-keycloak-tokens'));
+const login = new Login();
 
 export default login;

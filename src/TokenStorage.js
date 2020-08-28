@@ -1,21 +1,19 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { TOKENS as KEY } from './Constants';
 
-export default class TokenStorage {
-  key;
-  constructor(key) {
-    this.key = key;
-  }
+const TokenStorage = {
+  saveTokens: (tokens) => {
+    AsyncStorage.setItem(KEY, JSON.stringify(tokens));
+  },
 
-  saveTokens(tokens) {
-    return AsyncStorage.setItem(this.key, JSON.stringify(tokens));
-  }
-
-  async loadTokens() {
-    const tokens = await AsyncStorage.getItem(this.key);
+  loadTokens: async () => {
+    const tokens = await AsyncStorage.getItem(KEY);
     return (tokens) ? JSON.parse(tokens) : undefined;
-  }
+  },
 
-  clearTokens() {
-    return AsyncStorage.removeItem(this.key);
-  }
-}
+  clearTokens: () => {
+    AsyncStorage.removeItem(KEY);
+  },
+};
+
+export default TokenStorage;
