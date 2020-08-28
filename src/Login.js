@@ -85,17 +85,18 @@ class Login {
         return fullResponse.json();
       }
     }
-    return Promise.reject();
+    return Promise.reject(new Error('Error during kc-retrieve-user-info, savedTokens is', savedTokens));
   }
 
   // eslint-disable-next-line class-methods-use-this
   async refreshToken(conf) {
-    const { resource, realm, 'auth-server-url': authServerUrl } = conf;
+    const {
+      resource, realm, credentials, 'auth-server-url': authServerUrl,
+    } = conf;
     const savedTokens = await TokenStorage.loadTokens();
 
     if (!savedTokens) {
-      console.warn('Missing tokens');
-      return Promise.reject();
+      return Promise.reject(new Error('Error during kc-refresh-token, savedTokens is', savedTokens));
     }
 
     const refreshTokenUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/token`;
@@ -104,6 +105,7 @@ class Login {
       grant_type: 'refresh_token',
       refresh_token: savedTokens.refresh_token,
       client_id: encodeURIComponent(resource),
+      client_secret: credentials ? credentials.secret : undefined,
     });
     const options = { headers: basicHeaders, method, body };
 
@@ -114,7 +116,7 @@ class Login {
       return jsonResponse;
     }
 
-    return Promise.reject();
+    return Promise.reject(new Error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`));
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -123,8 +125,7 @@ class Login {
     const savedTokens = await TokenStorage.loadTokens();
 
     if (!savedTokens) {
-      console.warn('Token is undefined');
-      return Promise.reject();
+      return Promise.reject(new Error('Error during kc-logout, savedTokens is', savedTokens));
     }
 
     const logoutUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/logout`;
@@ -137,8 +138,7 @@ class Login {
       callback();
     }
 
-    console.error('Error during kc-logout: ', fullResponse);
-    return Promise.reject();
+    return Promise.reject(new Error('Error during kc-logout:', fullResponse));
   }
 }
 
