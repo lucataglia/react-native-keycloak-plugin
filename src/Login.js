@@ -1,6 +1,7 @@
 import * as qs from 'query-string';
 import { Linking } from 'react-native';
 import { encode as btoa } from 'base-64';
+import AsyncStorage from '@react-native-community/async-storage';
 import { getRealmURL, getLoginURL } from './Utils';
 import {
   GET, POST, URL,
@@ -117,9 +118,9 @@ class Login {
     return Promise.reject();
   }
 
-  async logoutKc(conf) {
+  async logoutKc(conf, callback, tokensKey) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await this.getTokens();
+    const savedTokens = tokensKey ? await AsyncStorage.getItem(tokensKey) : await this.getTokens();
     if (!savedTokens) {
       console.warn('Token is undefined');
       return Promise.reject();
@@ -131,11 +132,16 @@ class Login {
     const fullResponse = await fetch(logoutUrl, options);
 
     if (fullResponse.ok) {
-      this.tokenStorage.clearTokens();
-      return true;
+      if (!tokensKey) {
+        this.tokenStorage.clearTokens();
+      } else {
+        await AsyncStorage.removeItem(tokensKey);
+      }
+      callback();
+      return 'OK';
     }
-    console.error('Error during kc-logout: ', fullResponse);
-    return false;
+
+    throw new Error(`Error during kc-logout: ${fullResponse}`);
   }
 
 
