@@ -13,7 +13,7 @@ const basicHeaders = {
 };
 
 class Login {
-  startLoginProcess(conf, callback, scope = 'openid') {
+  login(conf, callback, scope = 'info') {
     return new Promise(((resolve, reject) => {
       const { url, state } = getLoginURL(conf, scope);
 
@@ -72,7 +72,7 @@ class Login {
   // eslint-disable-next-line class-methods-use-this
   async retrieveUserInfo(conf) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await TokenStorage.loadTokens();
+    const savedTokens = await TokenStorage.getTokens();
 
     if (savedTokens) {
       const userInfoUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/userinfo`;
@@ -93,7 +93,7 @@ class Login {
     const {
       resource, realm, credentials, 'auth-server-url': authServerUrl,
     } = conf;
-    const savedTokens = await TokenStorage.loadTokens();
+    const savedTokens = await TokenStorage.getTokens();
 
     if (!savedTokens) {
       return Promise.reject(new Error('Error during kc-refresh-token, savedTokens is', savedTokens));
@@ -120,9 +120,9 @@ class Login {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async logoutKc(conf, callback) {
+  async logout(conf) {
     const { realm, 'auth-server-url': authServerUrl } = conf;
-    const savedTokens = await TokenStorage.loadTokens();
+    const savedTokens = await TokenStorage.getTokens();
 
     if (!savedTokens) {
       return Promise.reject(new Error('Error during kc-logout, savedTokens is', savedTokens));
@@ -135,7 +135,6 @@ class Login {
 
     if (fullResponse.ok) {
       TokenStorage.clearTokens();
-      callback();
     }
 
     return Promise.reject(new Error('Error during kc-logout:', fullResponse));
