@@ -76,23 +76,23 @@ export const retrieveUserInfo = async (conf) => {
   const { realm, 'auth-server-url': authServerUrl } = conf;
   const savedTokens = await TokenStorage.getTokens();
 
-  if (savedTokens) {
-    const userInfoUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/userinfo`;
-    const method = GET;
-    const headers = { ...basicHeaders, Authorization: `Bearer ${savedTokens.access_token}` };
-    const options = { headers, method };
-    const fullResponse = await fetch(userInfoUrl, options);
-
-    if (fullResponse.ok) {
-      return fullResponse.json();
-    }
-
-    console.error(`Error during kc-retrieve-user-info: ${fullResponse.status}`);
-    return Promise.reject(fullResponse);
+  if (!savedTokens) {
+    console.error(`Error during kc-retrieve-user-info, savedTokens is ${savedTokens}`);
+    return Promise.reject();
   }
 
-  console.error(`Error during kc-retrieve-user-info, savedTokens is ${savedTokens}`);
-  return Promise.reject();
+  const userInfoUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/userinfo`;
+  const method = GET;
+  const headers = { ...basicHeaders, Authorization: `Bearer ${savedTokens.access_token}` };
+  const options = { headers, method };
+  const fullResponse = await fetch(userInfoUrl, options);
+
+  if (fullResponse.ok) {
+    return fullResponse.json();
+  }
+
+  console.error(`Error during kc-retrieve-user-info: ${fullResponse.status}`);
+  return Promise.reject(fullResponse);
 };
 
 export const refreshToken = async (conf) => {
@@ -117,10 +117,11 @@ export const refreshToken = async (conf) => {
   const options = { headers: basicHeaders, method, body };
 
   const fullResponse = await fetch(refreshTokenUrl, options);
+
   if (fullResponse.ok) {
     const jsonResponse = await fullResponse.json();
     TokenStorage.saveTokens(jsonResponse);
-    return jsonResponse;
+    return jsonResponse.json();
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
@@ -142,6 +143,7 @@ export const logout = async (conf) => {
 
   if (fullResponse.ok) {
     TokenStorage.clearTokens();
+    return Promise.resolve();
   }
 
   console.error(`Error during kc-logout: ${fullResponse.status}`);
