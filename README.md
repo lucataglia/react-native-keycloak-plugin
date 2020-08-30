@@ -53,12 +53,12 @@ Method arguments:
 config = {
   "realm": "<real_name>",
   "auth-server-url": "https://<domain>/sso/auth/",
-  "ssl-required": string,
+  "ssl-required": "string",
   "resource": "<resource_name>",
   "credentials": {
     "secret": "<secret_uuid>"
   },
-  "confidential-port": number,
+  "confidential-port": "string",
 }
 ```
 
@@ -69,16 +69,18 @@ Resolver arguments:
 
 ```json
 response.tokens = {
-    "access_token": string,
-    "expires_in": number,
-    "refresh_expires_in": number,
-    "refresh_token": string,
-    "token_type": string,
-    "not-before-policy": number,
-    "session_state": string,
-    "scope": string,
+    "access_token": "string",
+    "expires_in": "number",
+    "refresh_expires_in": "number",
+    "refresh_token": "string",
+    "token_type": "string",
+    "not-before-policy": "number",
+    "session_state": "string",
+    "scope": "string",
 }
 ```
+
+#### Manually handling the tokens
 
 ```js
 import KeyCloak, { TokenStorage } from 'react-native-keycloak-plugin'
