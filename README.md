@@ -86,7 +86,7 @@ response.tokens = {
 import KeyCloak, { TokenStorage } from 'react-native-keycloak-plugin'
 ```
 
-Logging in by the login function will save the tokens information into the AsyncStorage. Through the TokenStoage object, the plugin export three methods that can be used to get, save and clear the tokens. This method are needed if you want to directly access and manage the tokens from the AsyncStorge.
+Logging in by the login function will save the tokens information into the AsyncStorage. Through the TokenStorage object, the plugin exports three methods that can be used to get, save and clear the tokens. These methods are needed if you want to directly access and manage the tokens from the AsyncStorge.
 
 ### KeyCloak.retrieveUserInfo
 ```js
@@ -94,7 +94,7 @@ KeyCloak.retrieveUserInfo(conf)
   .then((userInfo) => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
-Passing a configuration JSON object, makes available into the resolve funcion the JSON that describe the user inside KeyCloak.
+Passing a configuration JSON object, makes available into the resolve function the JSON that describes the user inside KeyCloak.
 
 ### KeyCloak.refreshToken
 ```js
@@ -102,7 +102,7 @@ KeyCloak.refreshToken(conf)
   .then((response) => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
-Passing a configuration JSON object, makes available into the resolve funcion the JSON contains the refreshed tokens. This information are also saved into the AsyncStorage described above.
+Passing a configuration JSON object, makes available into the resolve function the JSON containing the refreshed tokens. This information are also saved into the AsyncStorage, as described above.
 
 
 ### KeyCloak.logout
@@ -111,7 +111,7 @@ KeyCloak.logout(conf)
   .then(() => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
-Passing a configuration JSON object, the method call take care of logout the user and clear the AsyncStorage from the tokens information.
+Passing a configuration JSON object, the method call takes care of logging out the user as well as removing the tokens from the AsyncStorage.
 
 
 [UsageAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#usage>
