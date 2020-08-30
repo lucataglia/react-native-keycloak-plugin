@@ -1,6 +1,4 @@
-import Login from './Login';
-
-const login = new Login();
+import KeyCloak from './Core';
 
 export { default as TokenStorage } from './TokenStorage';
-export default login;
+export default KeyCloak;

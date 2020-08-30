@@ -1,18 +1,26 @@
-# react-native-login-keycloak
-This is a fork of ak1394's React-Native-Login module. It's a version that I'm planning to maintenance more than it's been with ak1394.
+# react-native-keycloak-plugin
+This is a fork of mahomahoxd's react-native-login-keycloak module. I started from that to build some new feature using a functional style.
+
+This plugin exposes some util methods to interact with [KeyCloak][KeyCloakHome] in order to handle the user session. 
 
 ## Documentation
 
-- [Install](https://github.com/mahomahoxd/react-native-login#install)
-- [Usage](https://github.com/mahomahoxd/react-native-login#usage)
+- [Install][InstallAnchor]
+- [Usage][UsageAnchor]
 
-## Install
+## Install using npm
 
 ```shell
-npm i --save react-native-login-keycloak
+npm i --save react-native-keycloak-plugin
 ```
 
-## Usage
+## Install using yarn
+
+```shell
+yarn add react-native-keycloak-plugin
+```
+
+## Setup
 
 ### App configuration
 
@@ -22,79 +30,90 @@ Also, add the applinks:<APPSITE HOST> entry to the Associated Domains Capability
 
 
 ### Imports
+The plugin uses an export default statement, so you can import the variable with: 
+```js
+import KeyCloak from 'react-native-keycloak-plugin';
+```
+From that variable, you have access to all the util methods the plugin implements.
+
+## API
+### KeyCloak.login
 
 ```js
-import Login from 'react-native-login-keycloak';
+KeyCloak.login(conf, callback, scope)
+  .then((response) => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
+```
+Method arguments:
+  - _conf_: The JSON configuration object (see the example below).
+  - _callback_: By default the plugin try to open the keycloak login url on the default browser. Using this callback you can override this behavior e.g. handling the login flow into a WebView without leaving the app.
+  - _scope_: By default its value is 'info'. You can override this argument if some custom KeyCloak behavior is needed (e.g if you need to handle the KeyCloak ID_TOKEN, you have to pass 'openid info offline_access' as value).
+
+```json
+config = {
+  "realm": "<real_name>",
+  "auth-server-url": "https://<domain>/sso/auth/",
+  "ssl-required": "string",
+  "resource": "<resource_name>",
+  "credentials": {
+    "secret": "<secret_uuid>"
+  },
+  "confidential-port": "string",
+}
 ```
 
-### Checking if tokens are saved on the device
+Resolver arguments:
+ - _response_: a JSON object containing two fields:
+    - *tokens*: a JSON containing all the tokens returned by KeyCloak. If you used'info' as *scope* the JSON will be as shown below.
+    - *deepLinkUrl*: The redirectUrl with some KeyCloak query params added at the end.
+
+```json
+response.tokens = {
+    "access_token": "string",
+    "expires_in": "number",
+    "refresh_expires_in": "number",
+    "refresh_token": "string",
+    "token_type": "string",
+    "not-before-policy": "number",
+    "session_state": "string",
+    "scope": "string",
+}
+```
+
+#### Manually handling the tokens
 
 ```js
-const gatheredTokens = await Login.getTokens();
-console.log(gatheredTokens);
-
-// Prints:
-//
-// { access_token: '...', refresh_token: '...', id_token: '...', ...}
-// OR
-// undefined
+import KeyCloak, { TokenStorage } from 'react-native-keycloak-plugin'
 ```
 
-### Login
+Logging in by the login function will save the tokens information into the AsyncStorage. Through the TokenStorage object, the plugin exports three methods that can be used to get, save and clear the tokens. These methods are needed if you want to directly access and manage the tokens from the AsyncStorge.
+
+### KeyCloak.retrieveUserInfo
 ```js
-
-const config = {
-  url: 'https://<KEYCLOAK_HOST>/auth',
-  realm: '<REALM NAME>',
-  resource: '<RESOURCE NAME>',
-  redirectUri: 'https://<REDIRECT HOST>/success.html',
-  appsiteUri: 'https://<APPSITE HOST>/app.html',
-  kcIdpHint: 'facebook', // *optional*
-};
-
-Login.startLoginProcess(config).then(tokens => {
-  console.log(tokens);
-});
-
-// Prints:
-//
-// { access_token: '...', refresh_token: '...', id_token: '...', ...}
+KeyCloak.retrieveUserInfo(conf)
+  .then((userInfo) => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
 ```
+Passing a configuration JSON object, makes available into the resolve function the JSON that describes the user inside KeyCloak.
 
-Logging in by the startLoginProcess function will save it in the AsyncStorage, whereas after its been successful, getTokens will get the most recent tokens that are saved and you can then use it to authenticate against a backend.
-
-### Refreshing the token
+### KeyCloak.refreshToken
 ```js
-const refreshedTokens = await Login.refreshToken();
-console.log(refreshTokens);
-// Prints:
-//
-// { access_token: '...', refresh_token: '...', id_token: '...', ...}
-// OR
-// undefined
+KeyCloak.refreshToken(conf)
+  .then((response) => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
 ```
+Passing a configuration JSON object, makes available into the resolve function the JSON containing the refreshed tokens. This information are also saved into the AsyncStorage, as described above.
 
 
-
-### Retrieving logged in user info
+### KeyCloak.logout
 ```js
-const loggedInUser = await Login.retrieveUserInfo();
-console.log(loggedInUser);
-
-// Prints:
-//
-// { sub: '...',name: '... ',preferred_username: '...',given_name: '...' }
-
-// OR
-// undefined
+KeyCloak.logout(conf)
+  .then(() => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
 ```
+Passing a configuration JSON object, the method call takes care of logging out the user as well as removing the tokens from the AsyncStorage.
 
 
-### Logout
-
-```js
-Login.logoutKc();
-```
-Removes stored tokens. Will also do a Keycloak call to log the user out. Returns true on logout, else false. Subsequent calls to Login.tokens() will return null.
-
-If you got any improvements feel free to make a pull request or suggestion.
+[UsageAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#usage>
+[InstallAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#install>
+[KeyCloakHome]: <https://www.keycloak.org/getting-started>

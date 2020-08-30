@@ -6,7 +6,7 @@ const TokenStorage = {
     AsyncStorage.setItem(KEY, JSON.stringify(tokens));
   },
 
-  loadTokens: async () => {
+  getTokens: async () => {
     const tokens = await AsyncStorage.getItem(KEY);
     return (tokens) ? JSON.parse(tokens) : undefined;
   },
