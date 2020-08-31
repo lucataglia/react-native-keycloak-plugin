@@ -1,4 +1,11 @@
-import KeyCloak from './Core';
+import { login, logout, refreshToken, retrieveTokens, retrieveUserInfo } from './Core';
 
 export { default as TokenStorage } from './TokenStorage';
-export default KeyCloak;
+
+export default {
+  login,
+  logout,
+  refreshToken,
+  retrieveTokens,
+  retrieveUserInfo,
+};

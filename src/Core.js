@@ -121,7 +121,7 @@ export const refreshToken = async (conf) => {
   if (fullResponse.ok) {
     const jsonResponse = await fullResponse.json();
     TokenStorage.saveTokens(jsonResponse);
-    return jsonResponse.json();
+    return jsonResponse;
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
