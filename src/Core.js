@@ -143,7 +143,7 @@ export const logout = async (conf) => {
 
   if (fullResponse.ok) {
     TokenStorage.clearTokens();
-    return Promise.resolve();
+    return fullResponse.json();
   }
 
   console.error(`Error during kc-logout: ${fullResponse.status}`);
