@@ -1,7 +1,7 @@
 # react-native-keycloak-plugin
 This is a fork of mahomahoxd's react-native-login-keycloak module. I started from that to build some new feature using a functional style.
 
-This plugin exposes some util methods to interact with [KeyCloak][KeyCloakHome] in order to handle the user session. 
+This plugin exposes some util methods to interact with [Keycloak][KeyCloakHome] in order to handle the user session. 
 
 ## Documentation
 
@@ -32,26 +32,27 @@ Also, add the applinks:<APPSITE HOST> entry to the Associated Domains Capability
 ### Imports
 The plugin uses an export default statement, so you can import the variable with: 
 ```js
-import KeyCloak from 'react-native-keycloak-plugin';
+import Keycloak from 'react-native-keycloak-plugin';
 ```
 From that variable, you have access to all the util methods the plugin implements.
 
 ## API
-### KeyCloak.login
+### Keycloak.login
 
 ```js
-KeyCloak.login(conf, callback, scope)
+Keycloak.login(conf, callback, scope)
   .then((response) => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
 Method arguments:
   - _conf_: The JSON configuration object (see the example below).
   - _callback_: By default the plugin try to open the keycloak login url on the default browser. Using this callback you can override this behavior e.g. handling the login flow into a WebView without leaving the app.
-  - _scope_: By default its value is 'info'. You can override this argument if some custom KeyCloak behavior is needed (e.g if you need to handle the KeyCloak ID_TOKEN, you have to pass 'openid info offline_access' as value).
+  - _scope_: By default its value is 'info'. You can override this argument if some custom Keycloak behavior is needed (e.g if you need to handle the Keycloak ID_TOKEN, you have to pass 'openid info offline_access' as value).
 
 ```json
 config = {
   "realm": "<real_name>",
+  "appsiteUri": "<your_app_name>",
   "auth-server-url": "https://<domain>/sso/auth/",
   "ssl-required": "string",
   "resource": "<resource_name>",
@@ -64,8 +65,8 @@ config = {
 
 Resolver arguments:
  - _response_: a JSON object containing two fields:
-    - *tokens*: a JSON containing all the tokens returned by KeyCloak. If you used'info' as *scope* the JSON will be as shown below.
-    - *deepLinkUrl*: The redirectUrl with some KeyCloak query params added at the end.
+    - *tokens*: a JSON containing all the tokens returned by Keycloak. If you used'info' as *scope* the JSON will be as shown below.
+    - *deepLinkUrl*: The redirectUrl with some Keycloak query params added at the end.
 
 ```json
 response.tokens = {
@@ -83,36 +84,45 @@ response.tokens = {
 #### Manually handling the tokens
 
 ```js
-import KeyCloak, { TokenStorage } from 'react-native-keycloak-plugin'
+import Keycloak, { TokenStorage } from 'react-native-keycloak-plugin'
 ```
 
 Logging in by the login function will save the tokens information into the AsyncStorage. Through the TokenStorage object, the plugin exports three methods that can be used to get, save and clear the tokens. These methods are needed if you want to directly access and manage the tokens from the AsyncStorge.
 
-### KeyCloak.retrieveUserInfo
+### Keycloak.retrieveUserInfo
 ```js
-KeyCloak.retrieveUserInfo(conf)
+Keycloak.retrieveUserInfo(conf)
   .then((userInfo) => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
-Passing a configuration JSON object, makes available into the resolve function the JSON that describes the user inside KeyCloak.
+Passing a configuration JSON object, makes available into the resolve function the JSON that describes the user inside Keycloak.
 
-### KeyCloak.refreshToken
+### Keycloak.refreshToken
 ```js
-KeyCloak.refreshToken(conf)
+Keycloak.refreshToken(conf)
   .then((response) => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
 Passing a configuration JSON object, makes available into the resolve function the JSON containing the refreshed tokens. This information are also saved into the AsyncStorage, as described above.
 
 
-### KeyCloak.logout
+### Keycloak.logout
 ```js
-KeyCloak.logout(conf)
+Keycloak.logout(conf)
   .then(() => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
 Passing a configuration JSON object, the method call takes care of logging out the user as well as removing the tokens from the AsyncStorage.
 
+## Utils
+```js
+import { TokensUtils } from 'react-native-keycloak-plugin';
+
+TokensUtils.isAccessTokenExpired()
+  .then(() => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
+```
+This utils method check if the token saved into the AsyncStorage is still valid or if it's expired. Since it interact witht the AsyncStorage, a promise must be handled.
 
 [UsageAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#usage>
 [InstallAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#install>

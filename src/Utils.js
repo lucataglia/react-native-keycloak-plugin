@@ -1,6 +1,8 @@
-import base64 from 'base-64';
+import { decode as atob } from 'base-64';
 import * as qs from 'query-string';
 import uuidv4 from 'uuid/v4';
+import TokenStorage from './TokenStorage';
+
 
 const decodeToken = (token) => {
   let str = token.split('.')[1];
@@ -23,7 +25,7 @@ const decodeToken = (token) => {
   str = (`${str}===`).slice(0, str.length + (str.length % 4));
   str = str.replace(/-/g, '+').replace(/_/g, '/');
 
-  str = decodeURIComponent(escape(base64.decode(str)));
+  str = decodeURIComponent(escape(atob(str)));
 
   str = JSON.parse(str);
   return str;
@@ -56,7 +58,31 @@ const getLoginURL = (conf, scope) => {
   };
 };
 
+// TokensUtils
+const extractKeyFromJwtTokenPayload = (key, token) => {
+  const tokenBody = token.split('.')[1];
+  const decoded = atob(tokenBody);
+  return JSON.parse(decoded)[key];
+};
+
+
+const isAccessTokenExpired = async () =>
+  TokenStorage.getTokens()
+    .then(({ access_token: accessToken }) => {
+      const tokenExpirationTime = extractKeyFromJwtTokenPayload('exp', accessToken);
+      const now: number = Date.now() / 1000;
+      return tokenExpirationTime > now;
+    }).catch((e) => {
+      console.error(`Error in 'async isAccessTokenExpired()' call: ${e}`);
+      Promise.reject(e);
+    });
+
+const TokensUtils = {
+  isAccessTokenExpired,
+};
+
 export {
+  TokensUtils,
   decodeToken,
   getRealmURL,
   getLoginURL,
