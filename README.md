@@ -125,7 +125,16 @@ TokensUtils.isAccessTokenExpired()
   .then(() => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
-This utils method check if the token saved into the AsyncStorage is still valid or if it's expired. Since it interact witht the AsyncStorage, a promise must be handled.
+This utils method check if the access token saved into the AsyncStorage is still valid or if it's expired. Since it interact witht the AsyncStorage, a promise must be handled.
+
+```js
+import { TokensUtils } from 'react-native-keycloak-plugin';
+
+TokensUtils.willAccessTokenExpireIn(10)
+  .then(() => /* Your resolve */ );
+  .catch((error) => /* Your reject*/ )
+```
+This utils method check if the access token saved into the AsyncStorage will expire in less than 10 seconds. Since it interact witht the AsyncStorage, a promise must be handled.
 
 [InstallAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#install>
 [SetupAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#setup>
