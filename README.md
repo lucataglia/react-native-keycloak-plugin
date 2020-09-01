@@ -10,13 +10,14 @@ This plugin exposes some util methods to interact with [Keycloak][KeycloakHome] 
 - [API][APIAnchor]
 - [Utils][UtilsAnchor]
 
-## Install using npm
+## Install 
+### Using npm
 
 ```shell
 npm i --save react-native-keycloak-plugin
 ```
 
-## Install using yarn
+### Using yarn
 
 ```shell
 yarn add react-native-keycloak-plugin
