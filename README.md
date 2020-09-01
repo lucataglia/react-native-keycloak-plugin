@@ -130,7 +130,7 @@ This utils method check if the access token saved into the AsyncStorage is still
 ```js
 import { TokensUtils } from 'react-native-keycloak-plugin';
 
-TokensUtils.willAccessTokenExpireIn(10)
+TokensUtils.willAccessTokenExpireInLessThen(10)
   .then(() => /* Your resolve */ );
   .catch((error) => /* Your reject*/ )
 ```
