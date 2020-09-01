@@ -55,8 +55,9 @@ Method arguments:
 ```json
 config = {
   "realm": "<real_name>",
-  "appsiteUri": "<your_app_name>",
   "auth-server-url": "https://<domain>/sso/auth/",
+  "appsiteUri": "<your_app_name>",
+  "redirectUri": "<your_app_name>://<stack_screen_name>",
   "ssl-required": "string",
   "resource": "<resource_name>",
   "credentials": {
