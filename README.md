@@ -119,6 +119,7 @@ Keycloak.logout(conf)
 Passing a configuration JSON object, the method call takes care of logging out the user as well as removing the tokens from the AsyncStorage.
 
 ## Utils
+### TokensUtils.isAccessTokenExpired
 ```js
 import { TokensUtils } from 'react-native-keycloak-plugin';
 
@@ -128,6 +129,7 @@ TokensUtils.isAccessTokenExpired()
 ```
 This utils method check if the access token saved into the AsyncStorage is still valid or if it's expired. Since it interact witht the AsyncStorage, a promise must be handled.
 
+### TokensUtils.willAccessTokenExpireInLessThen
 ```js
 import { TokensUtils } from 'react-native-keycloak-plugin';
 
