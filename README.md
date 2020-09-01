@@ -1,12 +1,14 @@
 # react-native-keycloak-plugin
 This is a fork of mahomahoxd's react-native-login-keycloak module. I started from that to build some new feature using a functional style.
 
-This plugin exposes some util methods to interact with [Keycloak][KeyCloakHome] in order to handle the user session. 
+This plugin exposes some util methods to interact with [Keycloak][KeycloakHome] in order to handle the user session. 
 
 ## Documentation
 
 - [Install][InstallAnchor]
-- [Usage][UsageAnchor]
+- [Setup][SetupAnchor]
+- [API][APIAnchor]
+- [Utils][UtilsAnchor]
 
 ## Install using npm
 
@@ -124,6 +126,8 @@ TokensUtils.isAccessTokenExpired()
 ```
 This utils method check if the token saved into the AsyncStorage is still valid or if it's expired. Since it interact witht the AsyncStorage, a promise must be handled.
 
-[UsageAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#usage>
 [InstallAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#install>
-[KeyCloakHome]: <https://www.keycloak.org/getting-started>
+[SetupAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#setup>
+[APIAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#api>
+[UtilsAnchor]: <https://github.com/lucataglia/react-native-keycloak-plugin#utils>
+[KeycloakHome]: <https://www.keycloak.org/getting-started>
