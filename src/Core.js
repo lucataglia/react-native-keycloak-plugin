@@ -81,11 +81,11 @@ export const apiLogin = async (conf, username, password, scope = 'info') => {
   const method = POST;
   const body = qs.stringify({
     grant_type: 'password',
-    username: username,
-    password: password,
+    username,
+    password,
     client_id: encodeURIComponent(resource),
     client_secret: credentials ? credentials.secret : undefined,
-    scope: scope,
+    scope,
   });
   const options = { headers: basicHeaders, method, body };
 
