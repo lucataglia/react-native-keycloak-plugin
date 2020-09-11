@@ -1,19 +1,23 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { TOKENS as KEY } from './Constants';
+import { TOKENS as TOKENS_KEY, CONFIG as CONFIG_KEY } from './Constants';
 
 
 const TokenStorage = {
-  saveTokens: (tokens) => {
-    AsyncStorage.setItem(KEY, JSON.stringify(tokens));
+  saveConfiguration: async (conf) => {
+    await AsyncStorage.setItem(CONFIG_KEY, JSON.stringify(conf));
+  },
+
+  saveTokens: async (tokens) => {
+    await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
   },
 
   getTokens: async () => {
-    const tokens = await AsyncStorage.getItem(KEY);
+    const tokens = await AsyncStorage.getItem(TOKENS_KEY);
     return (tokens) ? JSON.parse(tokens) : undefined;
   },
 
-  clearTokens: () => {
-    AsyncStorage.removeItem(KEY);
+  clearSession: async () => {
+    await AsyncStorage.clear();
   },
 };
 

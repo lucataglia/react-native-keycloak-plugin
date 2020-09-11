@@ -2,5 +2,6 @@ const GET = 'GET';
 const POST = 'POST';
 const URL = 'url';
 const TOKENS = '@tokens';
+const CONFIG = '@keyCloakConfig';
 
-export { GET, POST, TOKENS, URL };
+export { CONFIG, GET, POST, TOKENS, URL };

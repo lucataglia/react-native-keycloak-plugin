@@ -53,7 +53,8 @@ export const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) =
   const jsonResponse = await fullResponse.json();
 
   if (fullResponse.ok) {
-    TokenStorage.saveTokens(jsonResponse);
+    await TokenStorage.saveConfiguration(conf);
+    await TokenStorage.saveTokens(jsonResponse);
     resolve({ tokens: jsonResponse, deepLinkUrl });
   } else {
     console.error('Error during kc-retrieve-tokens');
@@ -71,6 +72,35 @@ export const login = (conf, callback, scope = 'info') => new Promise(((resolve, 
   doLogin(url);
 }));
 
+export const apiLogin = async (conf, username, password, scope = 'info') => {
+  const {
+    resource, realm, credentials, 'auth-server-url': authServerUrl,
+  } = conf;
+
+  const url = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/token`;
+  const method = POST;
+  const body = qs.stringify({
+    grant_type: 'password',
+    username: username,
+    password: password,
+    client_id: encodeURIComponent(resource),
+    client_secret: credentials ? credentials.secret : undefined,
+    scope: scope,
+  });
+  const options = { headers: basicHeaders, method, body };
+
+  const fullResponse = await fetch(url, options);
+  const jsonResponse = await fullResponse.json();
+
+  if (fullResponse.status === 200) {
+    await TokenStorage.saveConfiguration(conf);
+    await TokenStorage.saveTokens(jsonResponse);
+    return jsonResponse;
+  }
+
+  console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.error_description}`);
+  return Promise.reject(fullResponse);
+};
 
 export const retrieveUserInfo = async (conf) => {
   const { realm, 'auth-server-url': authServerUrl } = conf;
@@ -120,7 +150,7 @@ export const refreshToken = async (conf) => {
 
   if (fullResponse.ok) {
     const jsonResponse = await fullResponse.json();
-    TokenStorage.saveTokens(jsonResponse);
+    await TokenStorage.saveTokens(jsonResponse);
     return jsonResponse;
   }
 
@@ -142,7 +172,7 @@ export const logout = async (conf) => {
   const fullResponse = await fetch(logoutUrl, options);
 
   if (fullResponse.ok) {
-    TokenStorage.clearTokens();
+    await TokenStorage.clearSession();
     return Promise.resolve();
   }
 
