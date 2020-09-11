@@ -11,6 +11,11 @@ const TokenStorage = {
     await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
   },
 
+  getConfiguration: async () => {
+    const conf = await AsyncStorage.getItem(CONFIG_KEY);
+    return (conf) ? JSON.parse(conf) : undefined;
+  },
+
   getTokens: async () => {
     const tokens = await AsyncStorage.getItem(TOKENS_KEY);
     return (tokens) ? JSON.parse(tokens) : undefined;

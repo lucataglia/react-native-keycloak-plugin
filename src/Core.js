@@ -29,10 +29,7 @@ const onOpenURL = (conf, resolve, reject, state, event, callback) => {
   }
 };
 
-
-// ### PUBLIC METHODS
-
-export const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) => {
+const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) => {
   const {
     resource, credentials, realm, redirectUri, 'auth-server-url': authServerUrl,
   } = conf;
@@ -61,6 +58,9 @@ export const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) =
     reject(jsonResponse);
   }
 };
+
+
+// ### PUBLIC METHODS
 
 export const login = (conf, callback, scope = 'info') => new Promise(((resolve, reject) => {
   const { url, state } = getLoginURL(conf, scope);
@@ -102,7 +102,13 @@ export const apiLogin = async (conf, username, password, scope = 'info') => {
   return Promise.reject(fullResponse);
 };
 
-export const retrieveUserInfo = async (conf) => {
+export const retrieveUserInfo = async () => {
+  const conf = await TokenStorage.getConfiguration();
+
+  if (!conf) {
+    return Promise.reject(Error('Could not read configuration from storage'));
+  }
+
   const { realm, 'auth-server-url': authServerUrl } = conf;
   const savedTokens = await TokenStorage.getTokens();
 
@@ -125,7 +131,13 @@ export const retrieveUserInfo = async (conf) => {
   return Promise.reject(fullResponse);
 };
 
-export const refreshToken = async (conf) => {
+export const refreshToken = async () => {
+  const conf = await TokenStorage.getConfiguration();
+
+  if (!conf) {
+    return Promise.reject(Error('Could not read configuration from storage'));
+  }
+
   const {
     resource, realm, credentials, 'auth-server-url': authServerUrl,
   } = conf;
@@ -158,7 +170,13 @@ export const refreshToken = async (conf) => {
   return Promise.reject(fullResponse);
 };
 
-export const logout = async (conf) => {
+export const logout = async () => {
+  const conf = await TokenStorage.getConfiguration();
+
+  if (!conf) {
+    return Promise.reject(Error('Could not read configuration from storage'));
+  }
+
   const { realm, 'auth-server-url': authServerUrl } = conf;
   const savedTokens = await TokenStorage.getTokens();
 
