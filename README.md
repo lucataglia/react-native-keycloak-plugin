@@ -44,7 +44,7 @@ From that variable, you have access to all the util methods the plugin implement
 
 ```js
 Keycloak.login(conf, callback, scope)
-  .then((response) => /* Your resolve */ );
+  .then((response) => /* Your resolve */ )
   .catch((error) => /* Your reject*/ )
 ```
 Method arguments:
@@ -85,13 +85,27 @@ response.tokens = {
 }
 ```
 
+### Keycloak.apiLogin
+
+```js
+Keycloak.apiLogin(conf, username, password, [scope = 'info'])
+    .then((response) => /* Your resolve */ )
+    .catch((error) => /* Your reject*/ )
+```
+
+Method arguments:
+  - _conf_: The JSON configuration object (see the example above).
+  - _username_: The username to be logged in
+  - _password_: The password associated to the above username
+  - _scope_: same behavior as above
+
 #### Manually handling the tokens
 
 ```js
 import Keycloak, { TokenStorage } from 'react-native-keycloak-plugin'
 ```
 
-Logging in by the login function will save the tokens information into the AsyncStorage. Through the TokenStorage object, the plugin exports three methods that can be used to get, save and clear the tokens. These methods are needed if you want to directly access and manage the tokens from the AsyncStorge.
+Logging in by the login function will save the tokens information and the configuration object into the AsyncStorage.<br>Through the TokenStorage object, the plugin exports some methods that can be used to interact with these objects.
 
 ### Keycloak.retrieveUserInfo
 ```js
