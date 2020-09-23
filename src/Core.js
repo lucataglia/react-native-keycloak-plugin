@@ -98,8 +98,8 @@ export const apiLogin = async (conf, username, password, scope = 'info') => {
     return jsonResponse;
   }
 
-  console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.error_description}`);
-  return Promise.reject(fullResponse);
+  console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.url}`);
+  return Promise.reject(jsonResponse.error_description);
 };
 
 export const retrieveUserInfo = async () => {
@@ -122,13 +122,14 @@ export const retrieveUserInfo = async () => {
   const headers = { ...basicHeaders, Authorization: `Bearer ${savedTokens.access_token}` };
   const options = { headers, method };
   const fullResponse = await fetch(userInfoUrl, options);
+  const jsonResponse = await fullResponse.json();
 
   if (fullResponse.ok) {
-    return fullResponse.json();
+    return jsonResponse;
   }
 
-  console.error(`Error during kc-retrieve-user-info: ${fullResponse.status}`);
-  return Promise.reject(fullResponse);
+  console.error(`Error during kc-retrieve-user-info: ${fullResponse.status}: ${fullResponse.url}`);
+  return Promise.reject(jsonResponse.error_description);
 };
 
 export const refreshToken = async () => {
@@ -159,15 +160,15 @@ export const refreshToken = async () => {
   const options = { headers: basicHeaders, method, body };
 
   const fullResponse = await fetch(refreshTokenUrl, options);
+  const jsonResponse = await fullResponse.json();
 
   if (fullResponse.ok) {
-    const jsonResponse = await fullResponse.json();
     await TokenStorage.saveTokens(jsonResponse);
     return jsonResponse;
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
-  return Promise.reject(fullResponse);
+  return Promise.reject(jsonResponse.error_description);
 };
 
 export const logout = async () => {
@@ -194,6 +195,7 @@ export const logout = async () => {
     return Promise.resolve();
   }
 
-  console.error(`Error during kc-logout: ${fullResponse.status}`);
-  return Promise.reject(fullResponse);
+  const jsonResponse = await fullResponse.json();
+  console.error(`Error during kc-logout: ${fullResponse.status}: ${fullResponse.url}`);
+  return Promise.reject(jsonResponse.error_description);
 };
