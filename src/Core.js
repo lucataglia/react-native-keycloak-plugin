@@ -159,15 +159,15 @@ export const refreshToken = async () => {
   const options = { headers: basicHeaders, method, body };
 
   const fullResponse = await fetch(refreshTokenUrl, options);
+  const jsonResponse = await fullResponse.json();
 
   if (fullResponse.ok) {
-    const jsonResponse = await fullResponse.json();
     await TokenStorage.saveTokens(jsonResponse);
     return jsonResponse;
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
-  return Promise.reject(fullResponse);
+  return Promise.reject(jsonResponse.error_description);
 };
 
 export const logout = async () => {
