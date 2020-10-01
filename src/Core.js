@@ -156,7 +156,7 @@ export const retrieveUserInfo = async () => {
   return Promise.reject();
 };
 
-export const refreshToken = async (scope = 'info') => {
+export const refreshToken = async () => {
   const conf = await TokenStorage.getConfiguration();
 
   if (!conf) {
