@@ -59,24 +59,10 @@ const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) => {
   }
 };
 
-
-// ### PUBLIC METHODS
-
-export const login = (conf, callback, scope = 'info') => new Promise(((resolve, reject) => {
-  const { url, state } = getLoginURL(conf, scope);
-
-  const listener = event => onOpenURL(conf, resolve, reject, state, event, retrieveTokens);
-  Linking.addEventListener(URL, listener);
-
-  const doLogin = callback || Linking.openURL;
-  doLogin(url);
-}));
-
-export const apiLogin = async (conf, username, password, scope = 'info') => {
+const performLogin = async (conf, username, password, scope = 'info') => {
   const {
     resource, realm, credentials, 'auth-server-url': authServerUrl,
   } = conf;
-
   const url = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/token`;
   const method = POST;
   const body = qs.stringify({
@@ -95,18 +81,56 @@ export const apiLogin = async (conf, username, password, scope = 'info') => {
   if (fullResponse.status === 200) {
     await TokenStorage.saveConfiguration(conf);
     await TokenStorage.saveTokens(jsonResponse);
+    await TokenStorage.saveCredentials({ username, password });
     return jsonResponse;
   }
 
   console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.url}`);
-  return Promise.reject(jsonResponse.error_description);
+  return Promise.reject();
+};
+
+
+// ### PUBLIC METHODS
+
+export const keycloakUILogin = (conf, callback, scope = 'info') => new Promise(((resolve, reject) => {
+  const { url, state } = getLoginURL(conf, scope);
+
+  const listener = event => onOpenURL(conf, resolve, reject, state, event, retrieveTokens);
+  Linking.addEventListener(URL, listener);
+
+  const doLogin = callback || Linking.openURL;
+  doLogin(url);
+}));
+
+export const login = async (conf, username, password, scope = 'info') => performLogin(conf, username, password, scope);
+
+export const refreshLogin = async (scope = 'info') => {
+  const conf = await TokenStorage.getConfiguration();
+  if (!conf) {
+    console.error('Error during kc-refresh-login: Could not read configuration from storage');
+    return Promise.reject();
+  }
+
+  const credentials = await TokenStorage.getCredentials();
+  if (!credentials) {
+    console.error('Error during kc-refresh-login:  Could not read from AsyncStorage');
+    return Promise.reject();
+  }
+  const { username, password } = credentials;
+  if (!username || !password) {
+    console.error('Error during kc-refresh-login: Username or Password not found');
+    return Promise.reject();
+  }
+
+  return performLogin(conf, scope, username, password);
 };
 
 export const retrieveUserInfo = async () => {
   const conf = await TokenStorage.getConfiguration();
 
   if (!conf) {
-    return Promise.reject(Error('Could not read configuration from storage'));
+    console.error('Error during kc-retrieve-user-info: Could not read configuration from storage');
+    return Promise.reject();
   }
 
   const { realm, 'auth-server-url': authServerUrl } = conf;
@@ -129,14 +153,15 @@ export const retrieveUserInfo = async () => {
   }
 
   console.error(`Error during kc-retrieve-user-info: ${fullResponse.status}: ${fullResponse.url}`);
-  return Promise.reject(jsonResponse.error_description);
+  return Promise.reject();
 };
 
 export const refreshToken = async () => {
   const conf = await TokenStorage.getConfiguration();
 
   if (!conf) {
-    return Promise.reject(Error('Could not read configuration from storage'));
+    console.error('Could not read configuration from storage');
+    return Promise.reject();
   }
 
   const {
@@ -168,21 +193,23 @@ export const refreshToken = async () => {
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
-  return Promise.reject(jsonResponse.error_description);
+  return Promise.reject(jsonResponse);
 };
 
 export const logout = async () => {
   const conf = await TokenStorage.getConfiguration();
 
   if (!conf) {
-    return Promise.reject(Error('Could not read configuration from storage'));
+    console.error('Could not read configuration from storage');
+    return Promise.reject();
   }
 
   const { realm, 'auth-server-url': authServerUrl } = conf;
   const savedTokens = await TokenStorage.getTokens();
 
   if (!savedTokens) {
-    return Promise.reject(new Error(`Error during kc-logout, savedTokens is ${savedTokens}`));
+    console.error(`Error during kc-logout, savedTokens is ${savedTokens}`);
+    return Promise.reject();
   }
 
   const logoutUrl = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/logout`;
@@ -195,7 +222,6 @@ export const logout = async () => {
     return Promise.resolve();
   }
 
-  const jsonResponse = await fullResponse.json();
   console.error(`Error during kc-logout: ${fullResponse.status}: ${fullResponse.url}`);
-  return Promise.reject(jsonResponse.error_description);
+  return Promise.reject();
 };
