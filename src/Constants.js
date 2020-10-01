@@ -1,7 +1,8 @@
+const CONFIG = '@keyCloakConfig';
+const CREDENTIALS = '@credentials';
 const GET = 'GET';
 const POST = 'POST';
-const URL = 'url';
 const TOKENS = '@tokens';
-const CONFIG = '@keyCloakConfig';
+const URL = 'url';
 
-export { CONFIG, GET, POST, TOKENS, URL };
+export { CONFIG, CREDENTIALS, GET, POST, TOKENS, URL };

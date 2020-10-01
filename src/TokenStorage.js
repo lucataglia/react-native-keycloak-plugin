@@ -1,14 +1,23 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { TOKENS as TOKENS_KEY, CONFIG as CONFIG_KEY } from './Constants';
+import { TOKENS as TOKENS_KEY, CONFIG as CONFIG_KEY, CREDENTIALS } from './Constants';
 
 
 const TokenStorage = {
+  saveCredentials: async (credentials) => {
+    await AsyncStorage.setItem(CREDENTIALS, JSON.stringify(credentials));
+  },
+
   saveConfiguration: async (conf) => {
     await AsyncStorage.setItem(CONFIG_KEY, JSON.stringify(conf));
   },
 
   saveTokens: async (tokens) => {
     await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+  },
+
+  getCredentials: async () => {
+    const credentials = await AsyncStorage.getItem(CREDENTIALS);
+    return (credentials) ? JSON.parse(credentials) : undefined;
   },
 
   getConfiguration: async () => {

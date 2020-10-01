@@ -72,13 +72,21 @@ export const login = (conf, callback, scope = 'info') => new Promise(((resolve, 
   doLogin(url);
 }));
 
-export const apiLogin = async (conf, username, password, scope = 'info') => {
+export const apiLogin = async (
+  conf,
+  scope = 'info',
+  readCredentials = false,
+  saveCredentials = false,
+  usernameArg,
+  passwordArg,
+) => {
   const {
     resource, realm, credentials, 'auth-server-url': authServerUrl,
   } = conf;
 
   const url = `${getRealmURL(realm, authServerUrl)}/protocol/openid-connect/token`;
   const method = POST;
+  const { username, password } = readCredentials ? await TokenStorage.getCredentials() : { usernameArg, passwordArg };
   const body = qs.stringify({
     grant_type: 'password',
     username,
@@ -95,6 +103,9 @@ export const apiLogin = async (conf, username, password, scope = 'info') => {
   if (fullResponse.status === 200) {
     await TokenStorage.saveConfiguration(conf);
     await TokenStorage.saveTokens(jsonResponse);
+    if (!readCredentials && saveCredentials) {
+      await TokenStorage.saveCredentials({ username, password });
+    }
     return jsonResponse;
   }
 
@@ -132,7 +143,7 @@ export const retrieveUserInfo = async () => {
   return Promise.reject(jsonResponse.error_description);
 };
 
-export const refreshToken = async () => {
+export const refreshToken = async (scope = 'info') => {
   const conf = await TokenStorage.getConfiguration();
 
   if (!conf) {
@@ -165,6 +176,10 @@ export const refreshToken = async () => {
   if (fullResponse.ok) {
     await TokenStorage.saveTokens(jsonResponse);
     return jsonResponse;
+  }
+
+  if (jsonResponse.error_description === 'Stale token') {
+    return apiLogin(conf, scope, true);
   }
 
   console.error(`Error during kc-refresh-token, ${fullResponse.status}: ${fullResponse.url}`);
