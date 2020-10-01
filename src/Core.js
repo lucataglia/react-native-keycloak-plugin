@@ -59,7 +59,7 @@ const retrieveTokens = async (conf, code, resolve, reject, deepLinkUrl) => {
   }
 };
 
-const performLogin = async (conf, scope = 'info', username, password) => {
+const performLogin = async (conf, username, password, scope = 'info') => {
   const {
     resource, realm, credentials, 'auth-server-url': authServerUrl,
   } = conf;
@@ -102,7 +102,7 @@ export const keycloakUILogin = (conf, callback, scope = 'info') => new Promise((
   doLogin(url);
 }));
 
-export const login = async (conf, scope = 'info', username, password) => performLogin(conf, scope, username, password);
+export const login = async (conf, username, password, scope = 'info') => performLogin(conf, username, password, scope);
 
 export const refreshLogin = async (scope = 'info') => {
   const conf = await TokenStorage.getConfiguration();

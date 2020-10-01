@@ -27,9 +27,11 @@ yarn add react-native-keycloak-plugin
 
 ### App configuration
 
-Please configure [Linking](https://facebook.github.io/react-native/docs/linking.html) module, including steps for handling Universal links (This might get changed due to not being able to close the tab on leave, ending up with a lot of tabs in the browser).
+Please configure [Linking](https://facebook.github.io/react-native/docs/linking.html) module, including steps for handling Universal links<br>
+This might get changed due to not being able to close the tab on leave, ending up with a lot of tabs in the browser.<br>
+_[Not needed if you're using React Native >= 0.60]_
 
-Also, add the applinks:<APPSITE HOST> entry to the Associated Domains Capability of your app.
+Also, add the applinks: `<APPSITE HOST>` entry to the Associated Domains Capability of your app.
 
 
 ### Imports
@@ -43,7 +45,7 @@ From that variable, you have access to all the util methods the plugin implement
 ### Keycloak.login
 
 ```js
-Keycloak.login(conf, callback, scope)
+Keycloak.keycloakUILogin(conf, callback, scope)
   .then((response) => /* Your resolve */ )
   .catch((error) => /* Your reject*/ )
 ```
@@ -88,7 +90,7 @@ response.tokens = {
 ### Keycloak.apiLogin
 
 ```js
-Keycloak.apiLogin(conf, username, password, [scope = 'info'])
+Keycloak.login(conf, username, password, [scope = 'info'])
     .then((response) => /* Your resolve */ )
     .catch((error) => /* Your reject*/ )
 ```
@@ -98,6 +100,18 @@ Method arguments:
   - _username_: The username to be logged in
   - _password_: The password associated to the above username
   - _scope_: same behavior as above
+  
+```js
+Keycloak.refreshLogin([scope = 'info'])
+    .then((response) => /* Your resolve */ )
+    .catch((error) => /* Your reject*/ )
+```
+
+Method arguments:
+  - _scope_: same behavior as above
+
+Sometimes you may need to re-login your user w/ Keycloak via the login process but, for some reason, you don't want / can't display the login page.<br>
+This method will re-login your user by recycling the last combination of username/password he entered.
 
 #### Manually handling the tokens
 
@@ -105,7 +119,7 @@ Method arguments:
 import Keycloak, { TokenStorage } from 'react-native-keycloak-plugin'
 ```
 
-Logging in by the login function will save the tokens information and the configuration object into the AsyncStorage.<br>Through the TokenStorage object, the plugin exports some methods that can be used to interact with these objects.
+Logging in by the login function will save the tokens information, and the configuration object into the AsyncStorage.<br>Through the TokenStorage object, the plugin exports some methods that can be used to interact with these objects.
 
 ### Keycloak.retrieveUserInfo
 ```js
