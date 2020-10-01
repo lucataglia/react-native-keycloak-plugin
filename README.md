@@ -42,7 +42,7 @@ import Keycloak from 'react-native-keycloak-plugin';
 From that variable, you have access to all the util methods the plugin implements.
 
 ## API
-### Keycloak.login
+### Keycloak.keycloakUILogin
 
 ```js
 Keycloak.keycloakUILogin(conf, callback, scope)
@@ -87,7 +87,7 @@ response.tokens = {
 }
 ```
 
-### Keycloak.apiLogin
+### Keycloak.login
 
 ```js
 Keycloak.login(conf, username, password, [scope = 'info'])
@@ -100,6 +100,8 @@ Method arguments:
   - _username_: The username to be logged in
   - _password_: The password associated to the above username
   - _scope_: same behavior as above
+  
+### Keycloak.refreshLogin  
   
 ```js
 Keycloak.refreshLogin([scope = 'info'])
