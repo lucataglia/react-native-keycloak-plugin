@@ -111,7 +111,7 @@ Method arguments:
   - _scope_: same behavior as above
 
 Sometimes you may need to re-login your user w/ Keycloak via the login process but, for some reason, you don't want / can't display the login page.<br>
-This method will re-login your user by recycling the last combination of username/password he entered.
+This method will re-login your user by recycling the last combination of username/password he entered, reading them from the AsyncStorage.
 
 #### Manually handling the tokens
 
