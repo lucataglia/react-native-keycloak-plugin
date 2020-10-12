@@ -122,7 +122,7 @@ export const refreshLogin = async (scope = 'info') => {
     return Promise.reject();
   }
 
-  return performLogin(conf, scope, username, password);
+  return performLogin(conf, username, password, scope);
 };
 
 export const retrieveUserInfo = async () => {
