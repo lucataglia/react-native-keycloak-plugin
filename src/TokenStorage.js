@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TOKENS as TOKENS_KEY, CONFIG as CONFIG_KEY, CREDENTIALS } from './Constants';
 
 

@@ -86,7 +86,7 @@ const performLogin = async (conf, username, password, scope = 'info') => {
   }
 
   console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.error_description}`);
-  return Promise.reject({ ...jsonResponse, status: fullResponse.status });
+  return Promise.reject(new Error({ ...jsonResponse, status: fullResponse.status }));
 };
 
 
@@ -99,7 +99,7 @@ export const keycloakUILogin = (conf, callback, scope = 'info') => new Promise((
   Linking.addEventListener(URL, listener);
 
   const doLogin = callback || Linking.openURL;
-  doLogin(url);
+  doLogin(url).then(null);
 }));
 
 export const login = async (conf, username, password, scope = 'info') => performLogin(conf, username, password, scope);
