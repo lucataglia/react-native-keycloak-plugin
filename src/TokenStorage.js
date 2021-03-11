@@ -31,7 +31,9 @@ const TokenStorage = {
   },
 
   clearSession: async () => {
-    await AsyncStorage.clear();
+    await AsyncStorage.removeItem(TOKENS_KEY);
+    await AsyncStorage.removeItem(CONFIG_KEY);
+    await AsyncStorage.removeItem(CREDENTIALS);
   },
 };
 
