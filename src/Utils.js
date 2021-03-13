@@ -77,7 +77,7 @@ const isAccessTokenExpired = async () =>
       Promise.reject(e);
     });
 
-const willAccessTokenExpireInLessThen = async seconds =>
+const willAccessTokenExpireInLessThan = async seconds =>
   TokenStorage.getTokens()
     .then(({ access_token: accessToken }) => {
       const tokenExpirationTime = extractKeyFromJwtTokenPayload('exp', accessToken);
@@ -90,7 +90,7 @@ const willAccessTokenExpireInLessThen = async seconds =>
 
 const TokensUtils = {
   isAccessTokenExpired,
-  willAccessTokenExpireInLessThen,
+  willAccessTokenExpireInLessThan,
 };
 
 
