@@ -86,7 +86,7 @@ const performLogin = async (conf, username, password, scope = 'info') => {
   }
 
   console.error(`Error during kc-api-login, ${fullResponse.status}: ${jsonResponse.error_description}`);
-  return Promise.reject(new Error({ ...jsonResponse, status: fullResponse.status }));
+  return Promise.reject({ ...jsonResponse, status: fullResponse.status });
 };
 
 
